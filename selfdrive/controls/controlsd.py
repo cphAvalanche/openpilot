@@ -75,7 +75,7 @@ class Controls:
 
     self.can_sock = can_sock
     if can_sock is None:
-      can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 20
+      can_timeout = None if os.environ.get('NO_CAN_TIMEOUT', False) else 200
       self.can_sock = messaging.sub_sock('can', timeout=can_timeout)
 
     self.log_sock = messaging.sub_sock('androidLog')
