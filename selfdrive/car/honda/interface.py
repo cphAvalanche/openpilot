@@ -7,6 +7,8 @@ from selfdrive.car.honda.values import CarControllerParams, CruiseButtons, Honda
 from selfdrive.car import STD_CARGO_KG, CivicParams, create_button_event, scale_tire_stiffness, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.disable_ecu import disable_ecu
+from typing import Dict
+from carparamtype import *
 
 
 ButtonType = car.CarState.ButtonEvent.Type
@@ -31,7 +33,7 @@ class CarInterface(CarInterfaceBase):
       return CarControllerParams.NIDEC_ACCEL_MIN, interp(current_speed, ACCEL_MAX_BP, ACCEL_MAX_VALS)
 
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret: CarParamType, candidate: str, fingerprint: Dict[int, Dict[int, int]], car_fw: List[CarFw], experimental_long: bool):
     ret.carName = "honda"
 
     if candidate in HONDA_BOSCH:

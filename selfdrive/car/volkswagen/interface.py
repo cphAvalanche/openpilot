@@ -4,6 +4,8 @@ from common.conversions import Conversions as CV
 from selfdrive.car import STD_CARGO_KG, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
 from selfdrive.car.volkswagen.values import CAR, PQ_CARS, CANBUS, NetworkLocation, TransmissionType, GearShifter
+from typing import Dict
+from carparamtype import *
 
 ButtonType = car.CarState.ButtonEvent.Type
 EventName = car.CarEvent.EventName
@@ -21,7 +23,7 @@ class CarInterface(CarInterfaceBase):
       self.cp_ext = self.cp_cam
 
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret: CarParamType, candidate: str, fingerprint: Dict[int, Dict[int, int]], car_fw: List[CarFw], experimental_long: bool):
     ret.carName = "volkswagen"
     ret.radarUnavailable = True
 

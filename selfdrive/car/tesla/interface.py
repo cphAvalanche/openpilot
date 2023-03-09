@@ -4,11 +4,13 @@ from panda import Panda
 from selfdrive.car.tesla.values import CANBUS, CAR
 from selfdrive.car import STD_CARGO_KG, get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
+from typing import Dict
+from carparamtype import *
 
 
 class CarInterface(CarInterfaceBase):
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret: CarParamType, candidate: str, fingerprint: Dict[int, Dict[int, int]], car_fw: List[CarFw], experimental_long: bool):
     ret.carName = "tesla"
 
     # There is no safe way to do steer blending with user torque,
