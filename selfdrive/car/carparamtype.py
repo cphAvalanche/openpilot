@@ -1,5 +1,17 @@
 from typing import List, Union
 
+# This file contains Python classes that correspond to the structs defined in the Cap'n Proto schema file "cereal/car.cpnp",
+#  specifically the "CarParams" struct. 
+
+# These classes are provided solely to assist with type hinting in Python code that interacts
+#  with the "CarParams" struct. They are not intended to be used to actually unwrap any Cap'n Proto structs.
+
+# To use these classes for type hinting, import them in your Python code with `from carparamtype import *`. 
+# For example, in the file seldrive/car/honda/interface.py, the _get_params() function 
+#  uses these classes to define parameters and return type of the function. 
+# When using a variable with the assigned type carparamtype (in the example named ret), possible completions
+#  and class variable types will be shown when typing ret..
+
 class SafetyModel:
     silent = 0
     hondaNidec = 1
