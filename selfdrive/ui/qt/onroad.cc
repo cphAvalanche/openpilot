@@ -259,6 +259,10 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
     v_ego = sm["carState"].getCarState().getVEgoCluster();
     v_ego_cluster_seen = true;
   }
+
+  // Distance from car in front
+  float dis_m_leadOne = sm["radarState"].getRadarState().getLeadOne().getDRel();
+
   float cur_speed = cs_alive ? std::max<float>(0.0, v_ego) : 0.0;
   cur_speed *= s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH;
 
@@ -277,6 +281,8 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   setProperty("speedUnit", s.scene.is_metric ? tr("km/h") : tr("mph"));
   setProperty("hideDM", (cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE));
   setProperty("status", s.status);
+
+  setProperty("disLeadOne", dis_m_leadOne);
 
   // update engageability/experimental mode button
   experimental_btn->updateState(s);
@@ -303,6 +309,8 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "–";
   QString speedStr = QString::number(std::nearbyint(speed));
   QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed)) : "–";
+
+  QString dLeadOneStr = QString::number(std::nearbyint(disLeadOne)); 
 
   // Draw outer box + border to contain set speed and speed limit
   int default_rect_width = 172;
@@ -437,6 +445,15 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   drawText(p, rect().center().x(), 210, speedStr);
   configFont(p, "Inter", 66, "Regular");
   drawText(p, rect().center().x(), 290, speedUnit, 200);
+
+  // long term create this in the AnnotatedCameraWidget::updateState with the other values
+  // const cereal::RadarState::Reader &radar_state = sm["radarState"].getRadarState();
+  // float testFloatValue = radar_state.getLeadOne().getDRel();
+
+  int yTestValue = (rect().center().y() * 2) * 0.75;
+  int font_sizeLeadOne = (dLeadOneStr.size() >= 3) ? 60 : 70;
+  configFont(p, "Inter", font_sizeLeadOne, "Bold");
+  drawText(p, rect().center().x(), yTestValue, dLeadOneStr, 200);
 
   p.restore();
 }
@@ -573,10 +590,7 @@ void AnnotatedCameraWidget::drawDriverState(QPainter &painter, const UIState *s)
   const int arc_l = 133;
   const float arc_t_default = 6.7;
   const float arc_t_extend = 12.0;
-  QColor arc_color = QColor::fromRgbF(0.545 - 0.445 * s->engaged(),
-                                      0.545 + 0.4 * s->engaged(),
-                                      0.545 - 0.285 * s->engaged(),
-                                      0.4 * (1.0 - dm_fade_state));
+  QColor arc_color = QColor::fromRgbF(0.09, 0.945, 0.26, 0.4*(1.0-dm_fade_state)*(s->engaged()));
   float delta_x = -scene.driver_pose_sins[1] * arc_l / 2;
   float delta_y = -scene.driver_pose_sins[0] * arc_l / 2;
   painter.setPen(QPen(arc_color, arc_t_default+arc_t_extend*fmin(1.0, scene.driver_pose_diff[1] * 5.0), Qt::SolidLine, Qt::RoundCap));
@@ -677,7 +691,7 @@ void AnnotatedCameraWidget::paintGL() {
 
   if (s->worldObjectsVisible()) {
     if (sm.rcv_frame("modelV2") > s->scene.started_frame) {
-      update_model(s, sm["modelV2"].getModelV2(), sm["uiPlan"].getUiPlan());
+      update_model(s, sm["modelV2"].getModelV2());
       if (sm.rcv_frame("radarState") > s->scene.started_frame) {
         update_leads(s, radar_state, sm["modelV2"].getModelV2().getPosition());
       }
