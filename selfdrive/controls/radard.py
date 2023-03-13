@@ -181,6 +181,7 @@ def radard_thread(sm=None, pm=None, can_sock=None):
 
   # wait for stats about the car to come in from controls
   cloudlog.info("radard is waiting for CarParams")
+  # CP of type car.capnp struct CarParams. CP stands for CarParams
   CP = car.CarParams.from_bytes(Params().get("CarParams", block=True))
   cloudlog.info("radard got CarParams")
 

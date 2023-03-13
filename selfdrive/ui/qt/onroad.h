@@ -48,6 +48,7 @@ private:
 class AnnotatedCameraWidget : public CameraWidget {
   Q_OBJECT
   Q_PROPERTY(float speed MEMBER speed);
+  Q_PROPERTY(float disLeadOne MEMBER disLeadOne);
   Q_PROPERTY(QString speedUnit MEMBER speedUnit);
   Q_PROPERTY(float setSpeed MEMBER setSpeed);
   Q_PROPERTY(float speedLimit MEMBER speedLimit);
@@ -72,6 +73,7 @@ private:
   ExperimentalButton *experimental_btn;
   QPixmap dm_img;
   float speed;
+  float disLeadOne; // Value used for distance (m) to car in front
   QString speedUnit;
   float setSpeed;
   float speedLimit;
