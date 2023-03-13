@@ -3,6 +3,7 @@ from cereal import car
 from opendbc.can.parser import CANParser
 from selfdrive.car.interfaces import RadarInterfaceBase
 from selfdrive.car.honda.values import DBC
+from typing import List
 
 
 def _create_nidec_can_parser(car_fingerprint):
@@ -16,6 +17,8 @@ def _create_nidec_can_parser(car_fingerprint):
 
 
 class RadarInterface(RadarInterfaceBase):
+  # CP stands for CarParams
+  # CP is of type struct CarParams found in car.capnp.
   def __init__(self, CP):
     super().__init__(CP)
     self.track_id = 0
@@ -34,7 +37,7 @@ class RadarInterface(RadarInterfaceBase):
     self.trigger_msg = 0x445
     self.updated_messages = set()
 
-  def update(self, can_strings):
+  def update(self, can_strings: List[bytes]):
     # in Bosch radar and we are only steering for now, so sleep 0.05s to keep
     # radard at 20Hz and return no points
     if self.radar_off_can:
@@ -51,6 +54,7 @@ class RadarInterface(RadarInterfaceBase):
     return rr
 
   def _update(self, updated_messages):
+    # ret is of type RadarData found in car.capnp struct RadarData
     ret = car.RadarData.new_message()
 
     for ii in sorted(updated_messages):
@@ -74,7 +78,7 @@ class RadarInterface(RadarInterfaceBase):
         if ii in self.pts:
           del self.pts[ii]
 
-    errors = []
+    errors: List[str] = []
     if not self.rcp.can_valid:
       errors.append("canError")
     if self.radar_fault:
