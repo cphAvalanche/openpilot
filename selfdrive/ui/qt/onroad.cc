@@ -262,6 +262,9 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   float cur_speed = cs_alive ? std::max<float>(0.0, v_ego) : 0.0;
   cur_speed *= s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH;
 
+  // Distance from car in front
+  float dis_m_leadOne = sm["radarState"].getRadarState().getLeadOne().getDRel();
+
   auto speed_limit_sign = sm["navInstruction"].getNavInstruction().getSpeedLimitSign();
   float speed_limit = nav_alive ? sm["navInstruction"].getNavInstruction().getSpeedLimit() : 0.0;
   speed_limit *= (s.scene.is_metric ? MS_TO_KPH : MS_TO_MPH);
@@ -277,6 +280,8 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   setProperty("speedUnit", s.scene.is_metric ? tr("km/h") : tr("mph"));
   setProperty("hideDM", (cs.getAlertSize() != cereal::ControlsState::AlertSize::NONE));
   setProperty("status", s.status);
+
+  setProperty("disLeadOne", dis_m_leadOne);
 
   // update engageability/experimental mode button
   experimental_btn->updateState(s);
@@ -303,6 +308,8 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   QString speedLimitStr = (speedLimit > 1) ? QString::number(std::nearbyint(speedLimit)) : "–";
   QString speedStr = QString::number(std::nearbyint(speed));
   QString setSpeedStr = is_cruise_set ? QString::number(std::nearbyint(setSpeed)) : "–";
+
+  QString dLeadOneStr = QString::number(std::nearbyint(disLeadOne));
 
   // Draw outer box + border to contain set speed and speed limit
   int default_rect_width = 172;
@@ -437,6 +444,11 @@ void AnnotatedCameraWidget::drawHud(QPainter &p) {
   drawText(p, rect().center().x(), 210, speedStr);
   configFont(p, "Inter", 66, "Regular");
   drawText(p, rect().center().x(), 290, speedUnit, 200);
+
+  int yTestValue = (rect().center().y() * 2) * 0.75;
+  int font_sizeLeadOne = (dLeadOneStr.size() >= 3) ? 60 : 70;
+  configFont(p, "Inter", font_sizeLeadOne, "Bold");
+  drawText(p, rect().center().x(), yTestValue, dLeadOneStr, 200);
 
   p.restore();
 }
