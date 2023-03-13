@@ -4,6 +4,8 @@ from system.swaglog import cloudlog
 import cereal.messaging as messaging
 from selfdrive.car import get_safety_config
 from selfdrive.car.interfaces import CarInterfaceBase
+from typing import Dict
+from carparamtype import *
 
 
 # mocked car interface to work with chffrplus
@@ -19,7 +21,7 @@ class CarInterface(CarInterfaceBase):
     self.prev_speed = 0.
 
   @staticmethod
-  def _get_params(ret, candidate, fingerprint, car_fw, experimental_long):
+  def _get_params(ret: CarParamType, candidate: str, fingerprint: Dict[int, Dict[int, int]], car_fw: List[CarFw], experimental_long: bool):
     ret.carName = "mock"
     ret.safetyConfigs = [get_safety_config(car.CarParams.SafetyModel.noOutput)]
     ret.mass = 1700.
